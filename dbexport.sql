@@ -91,7 +91,7 @@ ALTER TABLE public.service_variant_combination OWNER TO jackriley;
 CREATE TABLE public.service_variants (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     service_id uuid NOT NULL,
-    fee numeric,
+    state_cost numeric,
     service_attribute_value_ids uuid[]
 );
 
@@ -125,6 +125,7 @@ dfb12ac0-d7e3-4834-83e1-a4483c370cef	Texas	2d235cd6-3a77-4015-8aae-7cb8e2e91c64
 660016e3-8c6f-4a05-b7de-733ae28be0ac	S Corp	98b1e939-fae7-45aa-b7cc-73c7f5c8e40e
 2e4999f6-3e85-439d-b792-92802dcd1472	LP	98b1e939-fae7-45aa-b7cc-73c7f5c8e40e
 441b2154-2409-49c1-bef1-484a82a33631	PartnerShip	98b1e939-fae7-45aa-b7cc-73c7f5c8e40e
+28837049-c805-4d8e-8506-6807083c4226	North Dakota	2d235cd6-3a77-4015-8aae-7cb8e2e91c64
 \.
 
 
@@ -136,6 +137,7 @@ COPY public.attributes (title, id) FROM stdin;
 Jurisdiction	2d235cd6-3a77-4015-8aae-7cb8e2e91c64
 Entity Type	98b1e939-fae7-45aa-b7cc-73c7f5c8e40e
 Filing Speed	b2ee5840-5c32-4703-a18d-abd1e257fe70
+Stock Count	0ec3827f-4c72-4b73-b1b8-c766ee9716a1
 \.
 
 
@@ -186,7 +188,7 @@ d2b98cb1-3788-4975-9dde-16fb6274f414	834188f5-e911-4ccf-ae49-718c69c0adc3
 -- Data for Name: service_variants; Type: TABLE DATA; Schema: public; Owner: jackriley
 --
 
-COPY public.service_variants (id, service_id, fee, service_attribute_value_ids) FROM stdin;
+COPY public.service_variants (id, service_id, state_cost, service_attribute_value_ids) FROM stdin;
 d2b98cb1-3788-4975-9dde-16fb6274f414	418d4bdc-1115-4625-a7fe-cd22b10755fe	41	{e431e3f4-ec62-4f3d-92d0-6342348db44f,834188f5-e911-4ccf-ae49-718c69c0adc3}
 67511cb1-83f3-4352-baa2-8d5445c167f5	418d4bdc-1115-4625-a7fe-cd22b10755fe	0	{e431e3f4-ec62-4f3d-92d0-6342348db44f,400134e9-4caa-48f8-b60c-061c339ccce1}
 8f792ab9-9158-44b3-a829-211ed0b0384e	418d4bdc-1115-4625-a7fe-cd22b10755fe	0	{c5d0df65-e6a6-4def-afda-0d8db03936ad,834188f5-e911-4ccf-ae49-718c69c0adc3}
@@ -275,6 +277,22 @@ ALTER TABLE ONLY public.service_attribute_lines
 
 
 --
+-- Name: attribute_values unique_attribute_values; Type: CONSTRAINT; Schema: public; Owner: jackriley
+--
+
+ALTER TABLE ONLY public.attribute_values
+    ADD CONSTRAINT unique_attribute_values UNIQUE (title, attribute_id) INCLUDE (title, attribute_id);
+
+
+--
+-- Name: attributes unique_attributes; Type: CONSTRAINT; Schema: public; Owner: jackriley
+--
+
+ALTER TABLE ONLY public.attributes
+    ADD CONSTRAINT unique_attributes UNIQUE (title) INCLUDE (title);
+
+
+--
 -- Name: service_attribute_values unique_service_attribute_values_to_line; Type: CONSTRAINT; Schema: public; Owner: jackriley
 --
 
@@ -288,6 +306,14 @@ ALTER TABLE ONLY public.service_attribute_values
 
 ALTER TABLE ONLY public.service_variants
     ADD CONSTRAINT unique_service_variants UNIQUE (service_id, service_attribute_value_ids) INCLUDE (service_id, service_attribute_value_ids);
+
+
+--
+-- Name: services unique_services; Type: CONSTRAINT; Schema: public; Owner: jackriley
+--
+
+ALTER TABLE ONLY public.services
+    ADD CONSTRAINT unique_services UNIQUE (title) INCLUDE (title);
 
 
 --
