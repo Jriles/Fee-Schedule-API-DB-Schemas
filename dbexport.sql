@@ -92,7 +92,8 @@ CREATE TABLE public.service_variants (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     service_id uuid NOT NULL,
     state_cost numeric,
-    service_attribute_value_ids uuid[]
+    service_attribute_value_ids uuid[] NOT NULL,
+    per_page_state_cost numeric
 );
 
 
@@ -111,6 +112,18 @@ CREATE TABLE public.services (
 ALTER TABLE public.services OWNER TO jackriley;
 
 --
+-- Name: users; Type: TABLE; Schema: public; Owner: jackriley
+--
+
+CREATE TABLE public.users (
+    user_id uuid NOT NULL,
+    enabled boolean DEFAULT false
+);
+
+
+ALTER TABLE public.users OWNER TO jackriley;
+
+--
 -- Data for Name: attribute_values; Type: TABLE DATA; Schema: public; Owner: jackriley
 --
 
@@ -126,6 +139,7 @@ dfb12ac0-d7e3-4834-83e1-a4483c370cef	Texas	2d235cd6-3a77-4015-8aae-7cb8e2e91c64
 2e4999f6-3e85-439d-b792-92802dcd1472	LP	98b1e939-fae7-45aa-b7cc-73c7f5c8e40e
 441b2154-2409-49c1-bef1-484a82a33631	PartnerShip	98b1e939-fae7-45aa-b7cc-73c7f5c8e40e
 28837049-c805-4d8e-8506-6807083c4226	North Dakota	2d235cd6-3a77-4015-8aae-7cb8e2e91c64
+a608b7e1-2067-42e2-a5e1-749be5f152f0	1 Day	b2ee5840-5c32-4703-a18d-abd1e257fe70
 \.
 
 
@@ -167,6 +181,7 @@ d5b34783-ebee-40ca-ab81-15d3ded9155e	a58e9091-d1e4-4cbe-8309-785c4aa5b801	586586
 400134e9-4caa-48f8-b60c-061c339ccce1	340fd783-8a83-4ccc-97fe-b2aec87a58e9	660016e3-8c6f-4a05-b7de-733ae28be0ac
 219e0a21-83b7-4bd0-bbff-9b5ff516929b	340fd783-8a83-4ccc-97fe-b2aec87a58e9	2e4999f6-3e85-439d-b792-92802dcd1472
 161cf784-defb-480c-b752-9ae1bc144905	340fd783-8a83-4ccc-97fe-b2aec87a58e9	441b2154-2409-49c1-bef1-484a82a33631
+6718dea1-a330-4b0e-a28a-a479a6f7a072	0691160e-0102-490d-b4fb-d05ee5830054	a608b7e1-2067-42e2-a5e1-749be5f152f0
 \.
 
 
@@ -175,12 +190,9 @@ d5b34783-ebee-40ca-ab81-15d3ded9155e	a58e9091-d1e4-4cbe-8309-785c4aa5b801	586586
 --
 
 COPY public.service_variant_combination (service_variant_id, service_attribute_value_id) FROM stdin;
-d2b98cb1-3788-4975-9dde-16fb6274f414	e431e3f4-ec62-4f3d-92d0-6342348db44f
-d2b98cb1-3788-4975-9dde-16fb6274f414	834188f5-e911-4ccf-ae49-718c69c0adc3
-67511cb1-83f3-4352-baa2-8d5445c167f5	e431e3f4-ec62-4f3d-92d0-6342348db44f
-67511cb1-83f3-4352-baa2-8d5445c167f5	400134e9-4caa-48f8-b60c-061c339ccce1
-8f792ab9-9158-44b3-a829-211ed0b0384e	c5d0df65-e6a6-4def-afda-0d8db03936ad
-8f792ab9-9158-44b3-a829-211ed0b0384e	834188f5-e911-4ccf-ae49-718c69c0adc3
+50293078-abfe-4c1b-ac40-0c90295d0ff1	e431e3f4-ec62-4f3d-92d0-6342348db44f
+50293078-abfe-4c1b-ac40-0c90295d0ff1	834188f5-e911-4ccf-ae49-718c69c0adc3
+50293078-abfe-4c1b-ac40-0c90295d0ff1	6718dea1-a330-4b0e-a28a-a479a6f7a072
 \.
 
 
@@ -188,10 +200,8 @@ d2b98cb1-3788-4975-9dde-16fb6274f414	834188f5-e911-4ccf-ae49-718c69c0adc3
 -- Data for Name: service_variants; Type: TABLE DATA; Schema: public; Owner: jackriley
 --
 
-COPY public.service_variants (id, service_id, state_cost, service_attribute_value_ids) FROM stdin;
-d2b98cb1-3788-4975-9dde-16fb6274f414	418d4bdc-1115-4625-a7fe-cd22b10755fe	41	{e431e3f4-ec62-4f3d-92d0-6342348db44f,834188f5-e911-4ccf-ae49-718c69c0adc3}
-67511cb1-83f3-4352-baa2-8d5445c167f5	418d4bdc-1115-4625-a7fe-cd22b10755fe	0	{e431e3f4-ec62-4f3d-92d0-6342348db44f,400134e9-4caa-48f8-b60c-061c339ccce1}
-8f792ab9-9158-44b3-a829-211ed0b0384e	418d4bdc-1115-4625-a7fe-cd22b10755fe	0	{c5d0df65-e6a6-4def-afda-0d8db03936ad,834188f5-e911-4ccf-ae49-718c69c0adc3}
+COPY public.service_variants (id, service_id, state_cost, service_attribute_value_ids, per_page_state_cost) FROM stdin;
+50293078-abfe-4c1b-ac40-0c90295d0ff1	418d4bdc-1115-4625-a7fe-cd22b10755fe	29	{e431e3f4-ec62-4f3d-92d0-6342348db44f,834188f5-e911-4ccf-ae49-718c69c0adc3,6718dea1-a330-4b0e-a28a-a479a6f7a072}	11
 \.
 
 
@@ -201,6 +211,14 @@ d2b98cb1-3788-4975-9dde-16fb6274f414	418d4bdc-1115-4625-a7fe-cd22b10755fe	41	{e4
 
 COPY public.services (title, id) FROM stdin;
 Formation	418d4bdc-1115-4625-a7fe-cd22b10755fe
+\.
+
+
+--
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: jackriley
+--
+
+COPY public.users (user_id, enabled) FROM stdin;
 \.
 
 
@@ -314,6 +332,14 @@ ALTER TABLE ONLY public.service_variants
 
 ALTER TABLE ONLY public.services
     ADD CONSTRAINT unique_services UNIQUE (title) INCLUDE (title);
+
+
+--
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: jackriley
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (user_id);
 
 
 --
