@@ -112,23 +112,10 @@ CREATE TABLE public.services (
 ALTER TABLE public.services OWNER TO jackriley;
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: jackriley
---
-
-CREATE TABLE public.users (
-    user_id uuid NOT NULL,
-    enabled boolean DEFAULT false
-);
-
-
-ALTER TABLE public.users OWNER TO jackriley;
-
---
 -- Data for Name: attribute_values; Type: TABLE DATA; Schema: public; Owner: jackriley
 --
 
 COPY public.attribute_values (id, title, attribute_id) FROM stdin;
-dd6ca79e-f990-49e7-bbbb-b7cff19637cd	Corp	98b1e939-fae7-45aa-b7cc-73c7f5c8e40e
 e4ae3ed0-c89d-45ae-a5c9-1e3c166f1ea0	Alabama	2d235cd6-3a77-4015-8aae-7cb8e2e91c64
 47098832-9e60-445c-90a0-0f0b1d8c25fc	Delaware	2d235cd6-3a77-4015-8aae-7cb8e2e91c64
 5865863a-0803-48f3-a9b5-e65a89b5fc25	New Jersey	2d235cd6-3a77-4015-8aae-7cb8e2e91c64
@@ -140,6 +127,8 @@ dfb12ac0-d7e3-4834-83e1-a4483c370cef	Texas	2d235cd6-3a77-4015-8aae-7cb8e2e91c64
 441b2154-2409-49c1-bef1-484a82a33631	PartnerShip	98b1e939-fae7-45aa-b7cc-73c7f5c8e40e
 28837049-c805-4d8e-8506-6807083c4226	North Dakota	2d235cd6-3a77-4015-8aae-7cb8e2e91c64
 a608b7e1-2067-42e2-a5e1-749be5f152f0	1 Day	b2ee5840-5c32-4703-a18d-abd1e257fe70
+87af7357-6ddc-4a17-aa50-1d38e719b1d1	10000	0ec3827f-4c72-4b73-b1b8-c766ee9716a1
+dd6ca79e-f990-49e7-bbbb-b7cff19637cd	Not-a-corp	98b1e939-fae7-45aa-b7cc-73c7f5c8e40e
 \.
 
 
@@ -148,10 +137,10 @@ a608b7e1-2067-42e2-a5e1-749be5f152f0	1 Day	b2ee5840-5c32-4703-a18d-abd1e257fe70
 --
 
 COPY public.attributes (title, id) FROM stdin;
-Jurisdiction	2d235cd6-3a77-4015-8aae-7cb8e2e91c64
 Entity Type	98b1e939-fae7-45aa-b7cc-73c7f5c8e40e
 Filing Speed	b2ee5840-5c32-4703-a18d-abd1e257fe70
 Stock Count	0ec3827f-4c72-4b73-b1b8-c766ee9716a1
+Jurisdiction	2d235cd6-3a77-4015-8aae-7cb8e2e91c64
 \.
 
 
@@ -163,6 +152,7 @@ COPY public.service_attribute_lines (id, service_id, attribute_id) FROM stdin;
 a58e9091-d1e4-4cbe-8309-785c4aa5b801	418d4bdc-1115-4625-a7fe-cd22b10755fe	2d235cd6-3a77-4015-8aae-7cb8e2e91c64
 340fd783-8a83-4ccc-97fe-b2aec87a58e9	418d4bdc-1115-4625-a7fe-cd22b10755fe	98b1e939-fae7-45aa-b7cc-73c7f5c8e40e
 0691160e-0102-490d-b4fb-d05ee5830054	418d4bdc-1115-4625-a7fe-cd22b10755fe	b2ee5840-5c32-4703-a18d-abd1e257fe70
+b6dbde8a-c770-4875-8eb6-a27d4719b17d	418d4bdc-1115-4625-a7fe-cd22b10755fe	0ec3827f-4c72-4b73-b1b8-c766ee9716a1
 \.
 
 
@@ -182,6 +172,7 @@ d5b34783-ebee-40ca-ab81-15d3ded9155e	a58e9091-d1e4-4cbe-8309-785c4aa5b801	586586
 219e0a21-83b7-4bd0-bbff-9b5ff516929b	340fd783-8a83-4ccc-97fe-b2aec87a58e9	2e4999f6-3e85-439d-b792-92802dcd1472
 161cf784-defb-480c-b752-9ae1bc144905	340fd783-8a83-4ccc-97fe-b2aec87a58e9	441b2154-2409-49c1-bef1-484a82a33631
 6718dea1-a330-4b0e-a28a-a479a6f7a072	0691160e-0102-490d-b4fb-d05ee5830054	a608b7e1-2067-42e2-a5e1-749be5f152f0
+1010311c-48f4-443c-8db3-8e064964c205	b6dbde8a-c770-4875-8eb6-a27d4719b17d	87af7357-6ddc-4a17-aa50-1d38e719b1d1
 \.
 
 
@@ -211,14 +202,6 @@ COPY public.service_variants (id, service_id, state_cost, service_attribute_valu
 
 COPY public.services (title, id) FROM stdin;
 Formation	418d4bdc-1115-4625-a7fe-cd22b10755fe
-\.
-
-
---
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: jackriley
---
-
-COPY public.users (user_id, enabled) FROM stdin;
 \.
 
 
@@ -335,14 +318,6 @@ ALTER TABLE ONLY public.services
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: jackriley
---
-
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_pkey PRIMARY KEY (user_id);
-
-
---
 -- Name: fki_service_id_fkey; Type: INDEX; Schema: public; Owner: jackriley
 --
 
@@ -361,15 +336,31 @@ CREATE INDEX fki_service_line_id ON public.service_attribute_values USING btree 
 --
 
 ALTER TABLE ONLY public.service_attribute_lines
-    ADD CONSTRAINT attribute_id_fkey FOREIGN KEY (attribute_id) REFERENCES public.attributes(id) ON UPDATE CASCADE ON DELETE CASCADE NOT VALID;
+    ADD CONSTRAINT attribute_id_fkey FOREIGN KEY (attribute_id) REFERENCES public.attributes(id) ON DELETE CASCADE NOT VALID;
 
 
 --
--- Name: service_attribute_values attribute_value_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jackriley
+-- Name: attribute_values attribute_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jackriley
+--
+
+ALTER TABLE ONLY public.attribute_values
+    ADD CONSTRAINT attribute_id_fkey FOREIGN KEY (attribute_id) REFERENCES public.attributes(id) ON DELETE CASCADE NOT VALID;
+
+
+--
+-- Name: service_attribute_values attribute_value_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jackriley
 --
 
 ALTER TABLE ONLY public.service_attribute_values
-    ADD CONSTRAINT attribute_value_fkey FOREIGN KEY (attribute_value_id) REFERENCES public.attribute_values(id) NOT VALID;
+    ADD CONSTRAINT attribute_value_id_fkey FOREIGN KEY (attribute_value_id) REFERENCES public.attribute_values(id) ON DELETE CASCADE NOT VALID;
+
+
+--
+-- Name: service_attribute_values line_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jackriley
+--
+
+ALTER TABLE ONLY public.service_attribute_values
+    ADD CONSTRAINT line_id_fkey FOREIGN KEY (line_id) REFERENCES public.service_attribute_lines(id) ON DELETE CASCADE NOT VALID;
 
 
 --
@@ -381,14 +372,6 @@ ALTER TABLE ONLY public.service_variant_combination
 
 
 --
--- Name: service_attribute_lines service_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jackriley
---
-
-ALTER TABLE ONLY public.service_attribute_lines
-    ADD CONSTRAINT service_id_fkey FOREIGN KEY (service_id) REFERENCES public.services(id) ON UPDATE CASCADE ON DELETE CASCADE NOT VALID;
-
-
---
 -- Name: service_variants service_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jackriley
 --
 
@@ -397,11 +380,11 @@ ALTER TABLE ONLY public.service_variants
 
 
 --
--- Name: service_attribute_values service_line_id; Type: FK CONSTRAINT; Schema: public; Owner: jackriley
+-- Name: service_attribute_lines service_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jackriley
 --
 
-ALTER TABLE ONLY public.service_attribute_values
-    ADD CONSTRAINT service_line_id FOREIGN KEY (line_id) REFERENCES public.service_attribute_lines(id) ON UPDATE CASCADE ON DELETE CASCADE NOT VALID;
+ALTER TABLE ONLY public.service_attribute_lines
+    ADD CONSTRAINT service_id_fkey FOREIGN KEY (service_id) REFERENCES public.services(id) ON DELETE CASCADE NOT VALID;
 
 
 --
